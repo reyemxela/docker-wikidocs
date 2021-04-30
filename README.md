@@ -7,7 +7,9 @@ This Dockerfile will set up an Apache2/PHP server running [WikiDocs](https://git
 - **documents volume**: as WikiDocs stores entries as flat-files in plain text, mapping this on the host allows easy access to the wiki content. This can also be a named volume if you prefer.
 
 ## Quick run
-`docker run -d -p 80:80 -v /path/to/documents:/documents -e PUID=1000 -e PGID=1000 reyemxela/wikidocs`
+```
+docker run -d -p 80:80 -v /path/to/documents:/documents -e PUID=1000 -e PGID=1000 reyemxela/wikidocs
+```
 
 ## docker-compose
 ```
