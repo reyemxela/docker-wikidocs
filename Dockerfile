@@ -19,7 +19,20 @@ RUN sed -i "s/#LoadModule\ rewrite_module/LoadModule\ rewrite_module/" /etc/apac
 RUN curl -Lso wikidocs.tar.gz https://github.com/Zavy86/WikiDocs/archive/master.tar.gz && \
     tar --strip-components=1 -xf wikidocs.tar.gz -C /var/www/localhost/htdocs/ && \
     rm wikidocs.tar.gz && \
+    cd /var/www/localhost/htdocs && \
+    sed -i "s/config\.inc\.php/config\/config.inc.php/" setup.php update.php functions.inc.php && \
+    mkdir config && \
+    ln -s /var/www/localhost/htdocs/config / && \
     ln -s /var/www/localhost/htdocs/documents /
+
+# pre-populate the .htaccess file so if we supply a config.inc.php, everything still works
+RUN echo -e \
+'<IfModule mod_rewrite.c>\n'\
+'RewriteEngine On\n'\
+'RewriteBase /\n'\
+'RewriteCond %{REQUEST_FILENAME} !-f\n'\
+'RewriteRule ^(.*)$ index.php?doc=$1 [NC,L,QSA]\n'\
+'</IfModule>' >/var/www/localhost/htdocs/.htaccess
 
 # start script to override apache user's uid/gid
 RUN echo -e \
@@ -33,5 +46,6 @@ RUN chmod +x /start.sh
 WORKDIR /var/www/localhost/htdocs
 EXPOSE 80
 VOLUME /documents
+VOLUME /config
 
 ENTRYPOINT ["/start.sh"]
